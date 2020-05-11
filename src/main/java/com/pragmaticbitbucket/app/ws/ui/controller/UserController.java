@@ -24,6 +24,14 @@ public class UserController {
     // class UserDetailsRequestModel will map incoming body into a Java class
     public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails)
     {
+        /*
+            - from JSON body gets serialized into the model class
+            - model class gets copied to DTO
+            - sent to service which writes the data into userRepository
+            - finally, saved userEntity gets copied to DTO
+            - and DTO gets copied out to Response user mode object
+         */
+
         UserRest returnedValue = new UserRest();
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userDetails, userDto); // copy from source object to target object
