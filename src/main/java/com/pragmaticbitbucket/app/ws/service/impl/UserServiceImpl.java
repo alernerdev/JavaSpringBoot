@@ -11,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.User;
+
+import java.util.ArrayList;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -46,8 +49,17 @@ public class UserServiceImpl implements UserService {
     }
 
     // needed because deriving from UserDetailsService
+    // this method helps spring framework to load user details from database
     @Override
-    public UserDetails loadUserByUsername(String arg0) throws UsernameNotFoundException {
-        return null;
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if (userEntity == null)
+            throw new UsernameNotFoundException(email);
+
+        return new User(
+                userEntity.getEmail(),
+                userEntity.getEncryptedPassword(),
+                new ArrayList<>()
+        );
     }
 }
