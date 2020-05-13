@@ -1,6 +1,9 @@
 package com.pragmaticbitbucket.app.ws.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pragmaticbitbucket.app.ws.SpringApplicationContext;
+import com.pragmaticbitbucket.app.ws.service.UserService;
+import com.pragmaticbitbucket.app.ws.shared.dto.UserDto;
 import com.pragmaticbitbucket.app.ws.ui.model.request.UserLoginRequestModel;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -57,6 +60,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                .signWith(SignatureAlgorithm.HS512, SecurityConstants.TOKEN_SECRET)
                .compact();
 
+       // cant autowire our service here because this AuthenticationFilter is not a component/bean
+        // notice lower case "u" on the bean name
+        UserService userService = (UserService)SpringApplicationContext.getBean("userServiceImpl");
+        UserDto userDto = userService.getUser(userName);
+
        res.addHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX+token);
+       res.addHeader("UserID", userDto.getUserId());
     }
 }

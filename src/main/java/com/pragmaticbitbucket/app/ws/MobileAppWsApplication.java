@@ -16,5 +16,11 @@ public class MobileAppWsApplication {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public SpringApplicationContext SpringApplicationContext() {
+        return new SpringApplicationContext();
+    }
+
 }
 

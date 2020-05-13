@@ -1,4 +1,4 @@
-package com.pragmaticbitbucket.app.ws;
+package com.pragmaticbitbucket.app.ws.io.repositories;
 
 import com.pragmaticbitbucket.app.ws.io.entity.UserEntity;
 import org.springframework.data.repository.CrudRepository;

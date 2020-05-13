@@ -1,6 +1,6 @@
 package com.pragmaticbitbucket.app.ws.service.impl;
 
-import com.pragmaticbitbucket.app.ws.UserRepository;
+import com.pragmaticbitbucket.app.ws.io.repositories.UserRepository;
 import com.pragmaticbitbucket.app.ws.io.entity.UserEntity;
 import com.pragmaticbitbucket.app.ws.service.UserService;
 import com.pragmaticbitbucket.app.ws.shared.Utils;
@@ -62,4 +62,16 @@ public class UserServiceImpl implements UserService {
                 new ArrayList<>()
         );
     }
+
+    @Override
+    public UserDto getUser(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email);
+        if (userEntity == null)
+            throw new UsernameNotFoundException(email);
+
+        UserDto returnValue = new UserDto();
+        BeanUtils.copyProperties(userEntity, returnValue);
+        return returnValue;
+    }
+
 }
