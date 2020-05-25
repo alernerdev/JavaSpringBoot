@@ -1,14 +1,18 @@
 package com.pragmaticbitbucket.app.ws.ui.controller;
 
+import com.pragmaticbitbucket.app.ws.exceptions.UserServiceException;
 import com.pragmaticbitbucket.app.ws.service.UserService;
 import com.pragmaticbitbucket.app.ws.shared.dto.UserDto;
 import com.pragmaticbitbucket.app.ws.ui.model.request.UserDetailsRequestModel;
 import com.pragmaticbitbucket.app.ws.ui.model.response.ErrorMessages;
+import com.pragmaticbitbucket.app.ws.ui.model.response.OperationStatusModel;
 import com.pragmaticbitbucket.app.ws.ui.model.response.UserRest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 @RestController
 @RequestMapping("users")    // http://localhost:8080/users
@@ -45,7 +49,7 @@ public class UserController {
 
         // custom exception text example
         if (userDetails.getFirstName().isEmpty())
-            throw new Exception(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+            throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
 
         UserRest returnedValue = new UserRest();
         UserDto userDto = new UserDto();
@@ -57,14 +61,57 @@ public class UserController {
         return returnedValue;
     }
 
-    @PutMapping
-    public String updateUser() {
-        return "update user was called";
+    // the body can come as JSON or XML
+    @PutMapping(
+            path="/{id}",
+            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails)
+    {
+        UserRest returnedValue = new UserRest();
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(userDetails, userDto); // copy from source object to target object
+
+        UserDto updatedUser = userService.updateUser(id, userDto);
+        BeanUtils.copyProperties(updatedUser, returnedValue);
+
+        return returnedValue;
     }
 
-    @DeleteMapping
-    public String deleteUser() {
-        return "delete user was called";
+
+    // there is no body as part of this http call
+    @DeleteMapping(
+            path="/{id}",
+            produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    public OperationStatusModel deleteUser(@PathVariable String id)
+    {
+        OperationStatusModel statusModel = new OperationStatusModel();
+
+        userService.deleteUser(id);
+
+        statusModel.setOperationName(RequestOperationName.DELETE.name());
+        statusModel.setOperationResult(RequestOperationStatus.SUCCESS.name());
+
+        return statusModel;
     }
 
+    // /users?page=1&limit=50
+    @GetMapping(
+            produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    public List<UserRest> getUsers(@RequestParam(value="page", defaultValue = "0") int page,
+                                   @RequestParam(value="limit", defaultValue = "25") int limit) {
+        List<UserRest> returnValue = new ArrayList<UserRest>();
+
+        List<UserDto> users = userService.getUsers(page, limit);
+        for (UserDto userDto : users) {
+            UserRest userModel = new UserRest();
+            BeanUtils.copyProperties(userDto, userModel);
+            returnValue.add(userModel);
+        }
+
+        return returnValue;
+    }
 }
