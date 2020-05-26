@@ -1,18 +1,20 @@
-package com.pragmaticbitbucket.app.ws.ui.model.request;
+package com.pragmaticbitbucket.app.ws.ui.model.response;
 
-public class AddressRequestModel {
+
+public class AddressesRest {
+    private String addressId; // public id instead of database id
     private String city;
     private String country;
     private String streetName;
     private String postalCode;
     private String type;
 
-    public String getType() {
-        return type;
+    public String getAddressId() {
+        return addressId;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setAddressId(String addressId) {
+        this.addressId = addressId;
     }
 
     public String getCity() {
@@ -45,5 +47,13 @@ public class AddressRequestModel {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

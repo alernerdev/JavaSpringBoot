@@ -1,13 +1,18 @@
 package com.pragmaticbitbucket.app.ws.ui.controller;
 
 import com.pragmaticbitbucket.app.ws.exceptions.UserServiceException;
+import com.pragmaticbitbucket.app.ws.service.AddressService;
 import com.pragmaticbitbucket.app.ws.service.UserService;
+import com.pragmaticbitbucket.app.ws.shared.dto.AddressDto;
 import com.pragmaticbitbucket.app.ws.shared.dto.UserDto;
 import com.pragmaticbitbucket.app.ws.ui.model.request.UserDetailsRequestModel;
+import com.pragmaticbitbucket.app.ws.ui.model.response.AddressesRest;
 import com.pragmaticbitbucket.app.ws.ui.model.response.ErrorMessages;
 import com.pragmaticbitbucket.app.ws.ui.model.response.OperationStatusModel;
 import com.pragmaticbitbucket.app.ws.ui.model.response.UserRest;
+import org.apache.tomcat.jni.Address;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,8 +27,11 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    AddressService addressService;
+
     @GetMapping(path = "/{id}",
-            produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public UserRest getUser(@PathVariable String id) {
         UserRest userRest = new UserRest();
         UserDto userDto = userService.getUserByUserId(id);
@@ -35,11 +43,10 @@ public class UserController {
     // the body can come as JSON or XML
     @PostMapping(
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
-            produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
     )
     // class UserDetailsRequestModel will map incoming body into a Java class
-    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception
-    {
+    public UserRest createUser(@RequestBody UserDetailsRequestModel userDetails) throws Exception {
         /*
             - from JSON body gets serialized into the model class
             - model class gets copied to DTO
@@ -60,19 +67,19 @@ public class UserController {
         UserDto userDto = modelMapper.map(userDetails, UserDto.class);
 
         UserDto createdUser = userService.createUser(userDto);
-        BeanUtils.copyProperties(createdUser, returnedValue);
+        returnedValue = modelMapper.map(createdUser, UserRest.class);
+
 
         return returnedValue;
     }
 
     // the body can come as JSON or XML
     @PutMapping(
-            path="/{id}",
+            path = "/{id}",
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
-            produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
     )
-    public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails)
-    {
+    public UserRest updateUser(@PathVariable String id, @RequestBody UserDetailsRequestModel userDetails) {
         UserRest returnedValue = new UserRest();
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userDetails, userDto); // copy from source object to target object
@@ -86,11 +93,10 @@ public class UserController {
 
     // there is no body as part of this http call
     @DeleteMapping(
-            path="/{id}",
-            produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+            path = "/{id}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
     )
-    public OperationStatusModel deleteUser(@PathVariable String id)
-    {
+    public OperationStatusModel deleteUser(@PathVariable String id) {
         OperationStatusModel statusModel = new OperationStatusModel();
 
         userService.deleteUser(id);
@@ -103,10 +109,10 @@ public class UserController {
 
     // /users?page=1&limit=50
     @GetMapping(
-            produces= {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
     )
-    public List<UserRest> getUsers(@RequestParam(value="page", defaultValue = "0") int page,
-                                   @RequestParam(value="limit", defaultValue = "25") int limit) {
+    public List<UserRest> getUsers(@RequestParam(value = "page", defaultValue = "0") int page,
+                                   @RequestParam(value = "limit", defaultValue = "25") int limit) {
         List<UserRest> returnValue = new ArrayList<UserRest>();
 
         List<UserDto> users = userService.getUsers(page, limit);
@@ -117,5 +123,35 @@ public class UserController {
         }
 
         return returnValue;
+    }
+
+    // http://localhost:8080/mobile-app-ws/users/dfgbfbf/addresses
+    @GetMapping(
+            path = "/{id}/addresses",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    public List<AddressesRest> getUserAddresses(@PathVariable String id) {
+        List<AddressesRest> returnValue = new ArrayList<>();
+
+        List<AddressDto> addressesDto = addressService.getAddresses(id);
+        if (addressesDto != null && !addressesDto.isEmpty()) {
+            ModelMapper modelMapper = new ModelMapper();
+
+            java.lang.reflect.Type listType = new TypeToken<List<AddressesRest>>() {}.getType();
+            returnValue = modelMapper.map(addressesDto, listType);
+        }
+
+        return returnValue;
+    }
+
+    // http://localhost:8080/mobile-app-ws/users/dfgbfbf/addresses
+    @GetMapping(
+            path = "/{id}/addresses/{addressId}",
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    public AddressesRest getUserAddress(@PathVariable String addressId) {
+        AddressDto addressDto = addressService.getAddress(addressId);
+        ModelMapper modelMapper = new ModelMapper();
+        return modelMapper.map(addressDto, AddressesRest.class);
     }
 }

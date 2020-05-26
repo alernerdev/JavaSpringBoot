@@ -8,6 +8,7 @@
         <version>2.2.7.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
     <repositories>
         <repository>
             <id>snapshot</id>
@@ -18,6 +19,7 @@
             <url>https://artifactory.awstrp.net/artifactory/libs-release</url>
         </repository>
     </repositories>
+
     <groupId>com.pragmaticbitbucket.app.ws</groupId>
     <artifactId>mobile-app-ws</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -47,6 +49,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-hateoas</artifactId>
         </dependency>
 
         <dependency>
