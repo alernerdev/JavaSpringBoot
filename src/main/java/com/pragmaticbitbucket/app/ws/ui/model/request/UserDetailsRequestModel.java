@@ -1,11 +1,24 @@
 package com.pragmaticbitbucket.app.ws.ui.model.request;
 
+import java.util.List;
+
 public class UserDetailsRequestModel {
     // fields must match JSON payload
     private String firstName;
     private String lastName;
     private String password;
     private String email;
+    private List<AddressRequestModel> addresses;
+
+    public List<AddressRequestModel> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressRequestModel> addresses) {
+        this.addresses = addresses;
+    }
+
+
 
     public String getFirstName() {
         return firstName;
