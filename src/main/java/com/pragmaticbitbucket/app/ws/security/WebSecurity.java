@@ -27,6 +27,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         http.csrf().disable().authorizeRequests()
                 .antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL)
                 .permitAll()
+                .antMatchers(SecurityConstants.H2_CONSOLE)
+                .permitAll()
                 .anyRequest().authenticated().and()
                 .addFilter(
                         // new AuthenticationFilter(authenticationManager()
@@ -35,6 +37,11 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .addFilter(new AuthorizationFilter(authenticationManager()))
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        /* this is specifically for the H2 console.  This tutorial is an API and is not a web site.
+        * So as a security measure, we dont want the H2 console to be loaded inside some frame. Its a security feature
+        * */
+        // http.headers().frameOptions().disable();
     }
 
     @Override
