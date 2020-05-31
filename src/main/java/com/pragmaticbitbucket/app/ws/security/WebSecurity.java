@@ -29,6 +29,10 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers(SecurityConstants.H2_CONSOLE)
                 .permitAll()
+                // http://localhost:8080/mobile-app-ws/v2/api-docs
+                // http://localhost:8080/mobile-app-ws/swagger-ui.html
+                .antMatchers("/v2/api-docs", "/configuration/**", "/swagger*/**", "/webjars/**")
+                .permitAll()
                 .anyRequest().authenticated().and()
                 .addFilter(
                         // new AuthenticationFilter(authenticationManager()

@@ -10,6 +10,8 @@ import com.pragmaticbitbucket.app.ws.ui.model.response.AddressesRest;
 import com.pragmaticbitbucket.app.ws.ui.model.response.ErrorMessages;
 import com.pragmaticbitbucket.app.ws.ui.model.response.OperationStatusModel;
 import com.pragmaticbitbucket.app.ws.ui.model.response.UserRest;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.apache.tomcat.jni.Address;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -30,6 +32,11 @@ public class UserController {
     @Autowired
     AddressService addressService;
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization",
+                    value="${userController.authorizationHeader.description}",
+                    paramType = "header")
+    }) // this is for Swagger
     @GetMapping(path = "/{id}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public UserRest getUser(@PathVariable String id) {
@@ -73,6 +80,11 @@ public class UserController {
         return returnedValue;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization",
+                    value="${userController.authorizationHeader.description}",
+                    paramType = "header")
+    }) // this is for Swagger
     // the body can come as JSON or XML
     @PutMapping(
             path = "/{id}",
@@ -91,6 +103,11 @@ public class UserController {
     }
 
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization",
+                    value="${userController.authorizationHeader.description}",
+                    paramType = "header")
+    }) // this is for Swagger
     // there is no body as part of this http call
     @DeleteMapping(
             path = "/{id}",
@@ -108,6 +125,11 @@ public class UserController {
     }
 
     // /users?page=1&limit=50
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization",
+                    value="${userController.authorizationHeader.description}",
+                    paramType = "header")
+    }) // this is for Swagger
     @GetMapping(
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
     )
@@ -125,6 +147,11 @@ public class UserController {
         return returnValue;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization",
+                    value="${userController.authorizationHeader.description}",
+                    paramType = "header")
+    }) // this is for Swagger
     // http://localhost:8080/mobile-app-ws/users/dfgbfbf/addresses
     @GetMapping(
             path = "/{id}/addresses",
@@ -144,6 +171,11 @@ public class UserController {
         return returnValue;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="authorization",
+                    value="${userController.authorizationHeader.description}",
+                    paramType = "header")
+    }) // this is for Swagger
     // http://localhost:8080/mobile-app-ws/users/dfgbfbf/addresses
     @GetMapping(
             path = "/{id}/addresses/{addressId}",
